@@ -80,8 +80,8 @@ UPDATE_CMD="aws cloudformation update-stack \
 --notification-arns $CloudformationNotifyLambdaTopicArn \
 --template-url $AWS_INFRA_CF_BUCKET_URL/aws-infra/master/$CF_TEMPLATE \
 --parameters \
-ParameterKey=PrivateSubnetZone,ParameterValue="us-east-1c\,us-east-1d\,us-east-1e" \
-ParameterKey=PublicSubnetZone,ParameterValue="us-east-1c\,us-east-1d\,us-east-1e" \
+ParameterKey=PrivateSubnetZone,ParameterValue="us-east-1c, us-east-1d, us-east-1e" \
+ParameterKey=PublicSubnetZone,ParameterValue="us-east-1c, us-east-1d, us-east-1e" \
 ParameterKey=VpcName,ParameterValue="sagevpc" \
 ParameterKey=VpcSubnetPrefix,ParameterValue="10.6""
 message=$($UPDATE_CMD 2>&1 1>/dev/null)
