@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --output text --query 'Account')
-AWS_INFRA_CF_BUCKET_URL="https://s3.amazonaws.com/bootstrap-awss3cloudformationbucket-mgktko2ect4d"
+AWS_INFRA_CF_BUCKET_URL="https://s3.amazonaws.com/bootstrap-awss3cloudformationbucket-19qromfd235z9"
+CF_BUCKET_URL="https://s3.amazonaws.com/bootstrap-awss3cloudformationbucket-mgktko2ect4d"
 
 STACK_NAME="bootstrap"
 CF_TEMPLATE="$STACK_NAME.yml"
