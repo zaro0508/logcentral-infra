@@ -1,0 +1,468 @@
+Description: Setup Cross Account Access for Cloudtrail
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  AdmincentralAwsAccountId:
+    Type: String
+  BridgeDevAwsAccountId:
+    Type: String
+  BridgeProdAwsAccountId:
+    Type: String
+  ScicompAwsAccountId:
+    Type: String
+  SynapseProdAwsAccountId:
+    Type: String
+  SynapseDevAwsAccountId:
+    Type: String
+  SynapseDwAwsAccountId:
+    Type: String
+  SageItAwsAccountId:
+    Type: String
+Resources:
+  CloudtrailCrossAccountBucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !ImportValue us-east-1-essentials-CloudtrailBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "AWSCloudTrailAclCheck"
+            Effect: "Allow"
+            Principal:
+              Service: "cloudtrail.amazonaws.com"
+            Action: "s3:GetBucketAcl"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-CloudtrailBucket'
+          - Sid: "AWSCloudTrailWrite"
+            Effect: "Allow"
+            Principal:
+              Service: "cloudtrail.amazonaws.com"
+            Action: "s3:PutObject"
+            Resource:
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref 'AWS::AccountId'
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref AdmincentralAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref BridgeDevAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref BridgeProdAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref ScicompAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref SynapseProdAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref SynapseDevAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref SynapseDwAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref SageItAwsAccountId
+                  - '/*'
+            Condition:
+              StringEquals:
+                s3:x-amz-acl: "bucket-owner-full-control"
+
+  CloudtrailAdminCentralRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${AdmincentralAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${AdmincentralAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  CloudtrailAdminCentralAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'CloudtrailCrossAccountAccessPolicy-${AdmincentralAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${AdmincentralAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref AdmincentralAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${AdmincentralAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-CloudtrailBucket'
+      Roles:
+        - !Ref 'CloudtrailAdminCentralRole'
+
+  CloudtrailBridgeDevRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${BridgeDevAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${BridgeDevAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  CloudtrailBridgeDevAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'CloudtrailCrossAccountAccessPolicy-${BridgeDevAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${BridgeDevAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref BridgeDevAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${BridgeDevAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-CloudtrailBucket'
+      Roles:
+        - !Ref 'CloudtrailBridgeDevRole'
+
+  CloudtrailBridgeProdRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${BridgeProdAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${BridgeProdAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  CloudtrailBridgeProdAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'CloudtrailCrossAccountAccessPolicy-${BridgeProdAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${BridgeProdAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref BridgeProdAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${BridgeProdAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-CloudtrailBucket'
+      Roles:
+        - !Ref 'CloudtrailBridgeProdRole'
+
+  CloudtrailScicompRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${ScicompAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${ScicompAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  CloudtrailScicompAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'CloudtrailCrossAccountAccessPolicy-${ScicompAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${ScicompAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref ScicompAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${ScicompAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-CloudtrailBucket'
+      Roles:
+        - !Ref 'CloudtrailScicompRole'
+
+  CloudtrailSynapseProdRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${SynapseProdAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${SynapseProdAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  CloudtrailSynapseProdAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'CloudtrailCrossAccountAccessPolicy-${SynapseProdAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${SynapseProdAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref SynapseProdAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${SynapseProdAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-CloudtrailBucket'
+      Roles:
+        - !Ref 'CloudtrailSynapseProdRole'
+
+  CloudtrailSynapseDevRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${SynapseDevAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${SynapseDevAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  CloudtrailSynapseDevAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'CloudtrailCrossAccountAccessPolicy-${SynapseDevAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${SynapseDevAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref SynapseDevAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${SynapseDevAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-CloudtrailBucket'
+      Roles:
+        - !Ref 'CloudtrailSynapseDevRole'
+
+  CloudtrailSynapseDwRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${SynapseDwAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${SynapseDwAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  CloudtrailSynapseDevAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'CloudtrailCrossAccountAccessPolicy-${SynapseDwAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${SynapseDwAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref SynapseDwAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${SynapseDwAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-CloudtrailBucket'
+      Roles:
+        - !Ref 'CloudtrailSynapseDwRole'
+
+  CloudtrailSageItRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${SageItAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${SageItAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  CloudtrailSageItAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'CloudtrailCrossAccountAccessPolicy-${SageItAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${SageItAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref SageItAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${SageItAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-CloudtrailBucket'
+      Roles:
+        - !Ref 'CloudtrailSageItRole'

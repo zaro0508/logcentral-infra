@@ -71,6 +71,36 @@ else
   echo $message
 fi
 
+STACK_NAME="cloudtrail"
+CF_TEMPLATE="$STACK_NAME.yml"
+echo -e "\nUpdating $STACK_NAME with template cf_templates/$CF_TEMPLATE"
+UPDATE_CMD="aws cloudformation update-stack \
+--stack-name $STACK_NAME \
+--capabilities CAPABILITY_NAMED_IAM \
+--notification-arns $CloudformationNotifyLambdaTopicArn \
+--template-body file://cf_templates/$CF_TEMPLATE \
+--parameters \
+ParameterKey=AdmincentralAwsAccountId,ParameterValue=\"$AdmincentralAwsAccountId\" \
+ParameterKey=BridgeDevAwsAccountId,ParameterValue=\"$BridgeDevAwsAccountId\" \
+ParameterKey=BridgeProdAwsAccountId,ParameterValue=\"$BridgeProdAwsAccountId\" \
+ParameterKey=ScicompAwsAccountId,ParameterValue=\"$ScicompAwsAccountId\" \
+ParameterKey=SynapseProdAwsAccountId,ParameterValue=\"$SynapseProdAwsAccountId\" \
+ParameterKey=SynapseDevAwsAccountId,ParameterValue=\"$SynapseDevAwsAccountId\" \
+ParameterKey=SynapseDwAwsAccountId,ParameterValue=\"$SynapseDwAwsAccountId\" \
+ParameterKey=SageItAwsAccountId,ParameterValue=\"$SageItAwsAccountId\""
+message=$($UPDATE_CMD 2>&1 1>/dev/null)
+error_code=$(echo $?)
+if [[ $error_code -ne 0 && $message =~ .*"No updates are to be performed".* ]]; then
+  echo -e "\nNo stack changes detected. An update is not required."
+  error_code=0
+elif [[ $error_code -ne 0 ]]; then
+  echo $message
+  exit $error_code
+else
+  echo $message
+fi
+
+
 STACK_NAME="vpc"
 CF_TEMPLATE="vpc.yml"
 echo -e "\nUpdating $STACK_NAME with template $AWS_INFRA_CF_BUCKET_URL/aws-infra/master/$CF_TEMPLATE"
