@@ -86,7 +86,8 @@ ParameterKey=BridgeProdAwsAccountId,ParameterValue=\"$BridgeProdAwsAccountId\" \
 ParameterKey=ScicompAwsAccountId,ParameterValue=\"$ScicompAwsAccountId\" \
 ParameterKey=SynapseProdAwsAccountId,ParameterValue=\"$SynapseProdAwsAccountId\" \
 ParameterKey=SynapseDevAwsAccountId,ParameterValue=\"$SynapseDevAwsAccountId\" \
-ParameterKey=SynapseDwAwsAccountId,ParameterValue=\"$SynapseDwAwsAccountId\""
+ParameterKey=SynapseDwAwsAccountId,ParameterValue=\"$SynapseDwAwsAccountId\" \
+ParameterKey=SageItAwsAccountId,ParameterValue=\"$SageItAwsAccountId\""
 message=$($UPDATE_CMD 2>&1 1>/dev/null)
 error_code=$(echo $?)
 if [[ $error_code -ne 0 && $message =~ .*"No updates are to be performed".* ]]; then
