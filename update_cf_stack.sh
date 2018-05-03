@@ -71,7 +71,7 @@ else
   echo $message
 fi
 
-STACK_NAME="cloudtrail"
+STACK_NAME="CloudtrailLogAggregation"
 CF_TEMPLATE="$STACK_NAME.yml"
 echo -e "\nUpdating $STACK_NAME with template cf_templates/$CF_TEMPLATE"
 UPDATE_CMD="aws cloudformation update-stack \
