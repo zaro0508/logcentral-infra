@@ -1,0 +1,468 @@
+Description: Setup Cross Account Access for AWS Config Log and Data
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  AdmincentralAwsAccountId:
+    Type: String
+  BridgeDevAwsAccountId:
+    Type: String
+  BridgeProdAwsAccountId:
+    Type: String
+  ScicompAwsAccountId:
+    Type: String
+  SynapseProdAwsAccountId:
+    Type: String
+  SynapseDevAwsAccountId:
+    Type: String
+  SynapseDwAwsAccountId:
+    Type: String
+  SageItAwsAccountId:
+    Type: String
+Resources:
+  ConfigCrossAccountBucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !ImportValue us-east-1-essentials-AwsConfigBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "AWSConfigAclCheck"
+            Effect: "Allow"
+            Principal:
+              Service: "config.amazonaws.com"
+            Action: "s3:GetBucketAcl"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-AwsConfigBucket'
+          - Sid: "AWSConfigWrite"
+            Effect: "Allow"
+            Principal:
+              Service: "config.amazonaws.com"
+            Action: "s3:PutObject"
+            Resource:
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref 'AWS::AccountId'
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref AdmincentralAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref BridgeDevAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref BridgeProdAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref ScicompAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref SynapseProdAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref SynapseDevAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref SynapseDwAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref SageItAwsAccountId
+                  - '/*'
+            Condition:
+              StringEquals:
+                s3:x-amz-acl: "bucket-owner-full-control"
+
+  AwsConfigAdminCentralRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${AdmincentralAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${AdmincentralAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  AwsConfigAdminCentralAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'ConfigCrossAccountAccessPolicy-${AdmincentralAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${AdmincentralAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref AdmincentralAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${AdmincentralAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-AwsConfigBucket'
+      Roles:
+        - !Ref 'AwsConfigAdminCentralRole'
+
+  AwsConfigBridgeDevRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${BridgeDevAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${BridgeDevAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  AwsConfigBridgeDevAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'ConfigCrossAccountAccessPolicy-${BridgeDevAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${BridgeDevAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref BridgeDevAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${BridgeDevAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-AwsConfigBucket'
+      Roles:
+        - !Ref 'AwsConfigBridgeDevRole'
+
+  AwsConfigBridgeProdRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${BridgeProdAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${BridgeProdAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  AwsConfigBridgeProdAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'ConfigCrossAccountAccessPolicy-${BridgeProdAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${BridgeProdAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref BridgeProdAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${BridgeProdAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-AwsConfigBucket'
+      Roles:
+        - !Ref 'AwsConfigBridgeProdRole'
+
+  AwsConfigScicompRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${ScicompAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${ScicompAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  AwsConfigScicompAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'ConfigCrossAccountAccessPolicy-${ScicompAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${ScicompAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref ScicompAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${ScicompAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-AwsConfigBucket'
+      Roles:
+        - !Ref 'AwsConfigScicompRole'
+
+  AwsConfigSynapseProdRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${SynapseProdAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${SynapseProdAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  AwsConfigSynapseProdAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'ConfigCrossAccountAccessPolicy-${SynapseProdAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${SynapseProdAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref SynapseProdAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${SynapseProdAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-AwsConfigBucket'
+      Roles:
+        - !Ref 'AwsConfigSynapseProdRole'
+
+  AwsConfigSynapseDevRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${SynapseDevAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${SynapseDevAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  AwsConfigSynapseDevAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'ConfigCrossAccountAccessPolicy-${SynapseDevAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${SynapseDevAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref SynapseDevAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${SynapseDevAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-AwsConfigBucket'
+      Roles:
+        - !Ref 'AwsConfigSynapseDevRole'
+
+  AwsConfigSynapseDwRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${SynapseDwAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${SynapseDwAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  AwsConfigSynapseDevAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'ConfigCrossAccountAccessPolicy-${SynapseDwAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${SynapseDwAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref SynapseDwAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${SynapseDwAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-AwsConfigBucket'
+      Roles:
+        - !Ref 'AwsConfigSynapseDwRole'
+
+  AwsConfigSageItRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${SageItAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${SageItAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  AwsConfigSageItAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'ConfigCrossAccountAccessPolicy-${SageItAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${SageItAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref SageItAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${SageItAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-AwsConfigBucket'
+      Roles:
+        - !Ref 'AwsConfigSageItRole'
