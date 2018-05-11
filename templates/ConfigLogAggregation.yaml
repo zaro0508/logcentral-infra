@@ -3,20 +3,28 @@ AWSTemplateFormatVersion: 2010-09-09
 Parameters:
   AdmincentralAwsAccountId:
     Type: String
+    NoEcho: true
   BridgeDevAwsAccountId:
     Type: String
+    NoEcho: true
   BridgeProdAwsAccountId:
     Type: String
+    NoEcho: true
   ScicompAwsAccountId:
     Type: String
+    NoEcho: true
   SynapseProdAwsAccountId:
     Type: String
+    NoEcho: true
   SynapseDevAwsAccountId:
     Type: String
+    NoEcho: true
   SynapseDwAwsAccountId:
     Type: String
+    NoEcho: true
   SageItAwsAccountId:
     Type: String
+    NoEcho: true
 Resources:
   ConfigCrossAccountBucketPolicy:
     Type: "AWS::S3::BucketPolicy"
