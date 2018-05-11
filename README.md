@@ -15,7 +15,7 @@ helps application teams correlate and analyze log data across multiple applicati
 git-crypt unlock
 # set env vars
 source env_vars && source env_vars.secret
-# Run commands in update_cf_stack.sh to create or update CF stacks
+# Run sceptre to create or update CF stacks
 ```
 
 The above should setup resources for the account.  Once the infrastructure for the account has been setup
@@ -24,9 +24,8 @@ you can access and view the account using the [AWS console](https://AWS-account-
 *Note - This project depends on CF templates from other accounts.*
 
 ## Continuous Integration
-We have configured Travis to deploy CF template updates.  Travis does this by running update_cf_stack.sh on every
-change.
-
+We have configured Travis to deploy CF template updates.  Travis deploys using
+[sceptre](https://sceptre.cloudreach.com/latest/about.html)
 
 # Contributions
 
