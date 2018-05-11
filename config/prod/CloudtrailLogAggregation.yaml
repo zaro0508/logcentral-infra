@@ -1,11 +1,11 @@
 template_path: templates/CloudtrailLogAggregation.yaml
 stack_name: CloudtrailLogAggregation
 parameters:
-  AdmincentralAwsAccountId: {{ environment_variable.AdmincentralAwsAccountId }}
-  BridgeDevAwsAccountId: {{ environment_variable.BridgeDevAwsAccountId }}
-  BridgeProdAwsAccountId: {{ environment_variable.BridgeProdAwsAccountId }}
-  ScicompAwsAccountId: {{ environment_variable.ScicompAwsAccountId }}
-  SynapseProdAwsAccountId: {{ environment_variable.SynapseProdAwsAccountId }}
-  SynapseDevAwsAccountId: {{ environment_variable.SynapseDevAwsAccountId }}
-  SynapseDwAwsAccountId: {{ environment_variable.SynapseDwAwsAccountId }}
-  SageItAwsAccountId: {{ environment_variable.SageItAwsAccountId }}
+  AdmincentralAwsAccountId: "{{ environment_variable.AdmincentralAwsAccountId }}"
+  BridgeDevAwsAccountId: "{{ environment_variable.BridgeDevAwsAccountId }}"
+  BridgeProdAwsAccountId: "{{ environment_variable.BridgeProdAwsAccountId }}"
+  ScicompAwsAccountId: "{{ environment_variable.ScicompAwsAccountId }}"
+  SynapseProdAwsAccountId: "{{ environment_variable.SynapseProdAwsAccountId }}"
+  SynapseDevAwsAccountId: "{{ environment_variable.SynapseDevAwsAccountId }}"
+  SynapseDwAwsAccountId: "{{ environment_variable.SynapseDwAwsAccountId }}"
+  SageItAwsAccountId: "{{ environment_variable.SageItAwsAccountId }}"
