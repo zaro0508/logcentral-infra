@@ -287,6 +287,10 @@ Outputs:
     Value: !Ref AWSIAMSumoLogicUserAccessKey
     Export:
       Name: !Sub '${AWS::Region}-${AWS::StackName}-SumoLogicUserAccessKey'
+  AWSIAMSumoLogicUserSecretAccessKey:
+    Value: !GetAtt AWSIAMSumoLogicUserAccessKey.SecretAccessKey
+    Export:
+      Name: !Sub '${AWS::Region}-${AWS::StackName}-SumoLogicUserSecretAccessKey'
   AWSIAMEnforceMfaPolicy:
     Value: !Ref AWSIAMEnforceMfaPolicy
     Export:
