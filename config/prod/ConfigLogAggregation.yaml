@@ -9,3 +9,4 @@ parameters:
   SynapseDevAwsAccountId: "{{ environment_variable.SynapseDevAwsAccountId }}"
   SynapseDwAwsAccountId: "{{ environment_variable.SynapseDwAwsAccountId }}"
   SageItAwsAccountId: "{{ environment_variable.SageItAwsAccountId }}"
+  OrganizationsAwsAccountId: "{{ environment_variable.OrganizationsAwsAccountId }}"

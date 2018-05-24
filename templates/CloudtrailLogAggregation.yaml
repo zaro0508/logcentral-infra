@@ -25,6 +25,9 @@ Parameters:
   SageItAwsAccountId:
     Type: String
     NoEcho: true
+  OrganizationsAwsAccountId:
+    Type: String
+    NoEcho: true
 Resources:
   CloudtrailCrossAccountBucketPolicy:
     Type: "AWS::S3::BucketPolicy"
@@ -110,6 +113,13 @@ Resources:
                   - !ImportValue us-east-1-essentials-CloudtrailBucket
                   - '/AWSLogs/'
                   - !Ref SageItAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref OrganizationsAwsAccountId
                   - '/*'
             Condition:
               StringEquals:
@@ -474,3 +484,48 @@ Resources:
                   - !ImportValue 'us-east-1-essentials-CloudtrailBucket'
       Roles:
         - !Ref 'CloudtrailSageItRole'
+
+  CloudtrailOrganizationsRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${SageItAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${SageItAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  CloudtrailOrganizationsAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'CloudtrailCrossAccountAccessPolicy-${OrganizationsAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${OrganizationsAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref SageItAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${OrganizationsAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-CloudtrailBucket'
+      Roles:
+        - !Ref 'CloudtrailOrganizationsRole'
