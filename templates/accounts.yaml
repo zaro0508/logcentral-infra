@@ -171,6 +171,15 @@ Resources:
                 - ''
                 - - 'arn:aws:s3:::'
                   - !ImportValue us-east-1-essentials-CloudtrailBucket
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
   AWSIAMLoggingServiceGroup:
     Type: 'AWS::IAM::Group'
     Properties:
