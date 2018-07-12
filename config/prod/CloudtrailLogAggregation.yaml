@@ -1,12 +1,12 @@
 template_path: templates/CloudtrailLogAggregation.yaml
 stack_name: CloudtrailLogAggregation
 parameters:
-  AdmincentralAwsAccountId: "{{ environment_variable.AdmincentralAwsAccountId }}"
-  BridgeDevAwsAccountId: "{{ environment_variable.BridgeDevAwsAccountId }}"
-  BridgeProdAwsAccountId: "{{ environment_variable.BridgeProdAwsAccountId }}"
-  ScicompAwsAccountId: "{{ environment_variable.ScicompAwsAccountId }}"
-  SynapseProdAwsAccountId: "{{ environment_variable.SynapseProdAwsAccountId }}"
-  SynapseDevAwsAccountId: "{{ environment_variable.SynapseDevAwsAccountId }}"
-  SynapseDwAwsAccountId: "{{ environment_variable.SynapseDwAwsAccountId }}"
-  SageItAwsAccountId: "{{ environment_variable.SageItAwsAccountId }}"
-  OrganizationsAwsAccountId: "{{ environment_variable.OrganizationsAwsAccountId }}"
+  AdmincentralAwsAccountId: !ssm /infra/AdmincentralAwsAccountId
+  BridgeDevAwsAccountId: !ssm /infra/BridgeDevAwsAccountId
+  BridgeProdAwsAccountId: !ssm /infra/BridgeProdAwsAccountId
+  ScicompAwsAccountId: !ssm /infra/ScicompAwsAccountId
+  SynapseProdAwsAccountId: !ssm /infra/SynapseProdAwsAccountId
+  SynapseDevAwsAccountId: !ssm /infra/SynapseDevAwsAccountId
+  SynapseDwAwsAccountId: !ssm /infra/SynapseDwAwsAccountId
+  SageItAwsAccountId: !ssm /infra/SageItAwsAccountId
+  OrganizationsAwsAccountId: !ssm /infra/OrganizationsAwsAccountId

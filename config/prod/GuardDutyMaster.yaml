@@ -3,6 +3,6 @@ stack_name: guardduty-master
 dependencies:
   - essentials
 parameters:
-  BridgeProdAwsAccountId: "{{ environment_variable.BridgeProdAwsAccountId }}"
-  SynapseProdAwsAccountId: "{{ environment_variable.SynapseProdAwsAccountId }}"
-  OperatorEmail: {{ environment_variable.OperatorEmail }}
+  BridgeProdAwsAccountId: !ssm /infra/BridgeProdAwsAccountId
+  SynapseProdAwsAccountId: !ssm /infra/SynapseProdAwsAccountId
+  OperatorEmail: aws.logcentral@sagebase.org
