@@ -526,7 +526,7 @@ Resources:
                 - - 'arn:aws:s3:::'
                   - !ImportValue us-east-1-essentials-AwsConfigBucket
                   - '/AWSLogs/'
-                  - !Ref SageItAwsAccountId
+                  - !Ref OrganizationsAwsAccountId
                   - '/*'
           - Sid: !Sub 'BucketAccessBy${OrganizationsAwsAccountId}'
             Effect: "Allow"
