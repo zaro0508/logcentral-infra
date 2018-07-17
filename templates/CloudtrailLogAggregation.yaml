@@ -501,11 +501,11 @@ Resources:
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Sid: !Sub 'RoleAccessBy${SageItAwsAccountId}'
+          - Sid: !Sub 'RoleAccessBy${OrganizationsAwsAccountId}'
             Effect: "Allow"
             Principal:
               AWS:
-                - !Sub 'arn:aws:iam::${SageItAwsAccountId}:root'
+                - !Sub 'arn:aws:iam::${OrganizationsAwsAccountId}:root'
             Action:
               - "sts:AssumeRole"
 
@@ -526,7 +526,7 @@ Resources:
                 - - 'arn:aws:s3:::'
                   - !ImportValue us-east-1-essentials-CloudtrailBucket
                   - '/AWSLogs/'
-                  - !Ref SageItAwsAccountId
+                  - !Ref OrganizationsAwsAccountId
                   - '/*'
           - Sid: !Sub 'BucketAccessBy${OrganizationsAwsAccountId}'
             Effect: "Allow"
