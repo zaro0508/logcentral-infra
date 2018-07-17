@@ -28,6 +28,9 @@ Parameters:
   OrganizationsAwsAccountId:
     Type: String
     NoEcho: true
+  SandboxAwsAccountId:
+    Type: String
+    NoEcho: true
 Resources:
   ConfigCrossAccountBucketPolicy:
     Type: "AWS::S3::BucketPolicy"
@@ -120,6 +123,13 @@ Resources:
                   - !ImportValue us-east-1-essentials-AwsConfigBucket
                   - '/AWSLogs/'
                   - !Ref OrganizationsAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref SandboxAwsAccountId
                   - '/*'
             Condition:
               StringEquals:
@@ -529,3 +539,48 @@ Resources:
                   - !ImportValue 'us-east-1-essentials-AwsConfigBucket'
       Roles:
         - !Ref 'AwsConfigOrganizationsRole'
+
+  AwsConfigSandboxRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${SandboxAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${SandboxAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  AwsConfigSandboxAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'ConfigCrossAccountAccessPolicy-${SandboxAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${SandboxAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-AwsConfigBucket
+                  - '/AWSLogs/'
+                  - !Ref SandboxAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${SandboxAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-AwsConfigBucket'
+      Roles:
+        - !Ref 'AwsConfigSandboxRole'

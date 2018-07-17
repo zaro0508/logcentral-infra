@@ -10,3 +10,4 @@ parameters:
   SynapseDwAwsAccountId: !ssm /infra/SynapseDwAwsAccountId
   SageItAwsAccountId: !ssm /infra/SageItAwsAccountId
   OrganizationsAwsAccountId: !ssm /infra/OrganizationsAwsAccountId
+  SandboxAwsAccountId: !ssm /infra/SandboxAwsAccountId
