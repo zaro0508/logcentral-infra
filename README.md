@@ -31,7 +31,7 @@ for the account has been setup you can access and view the account using the
 
 ## Setup Cloudtrail and Config Aggregation
 Steps to setup aggregation from source account to Logcentral
- 1. Create a [PR to add policy/permissions](https://github.com/Sage-Bionetworks/logcentral-infra/pull/14)
+ 1. Create a [PR to add policy/permissions](https://github.com/Sage-Bionetworks/logcentral-infra/pull/23)
     to allow another account to send data to logcentral.
  2. Setup cloudtrail and config in source account with [essentails.yaml in aws-infra](https://github.com/Sage-Bionetworks/aws-infra/blob/master/templates/essentials.yaml)
     which will send the logs to a cloudtrail and config bucket in Logcentral.
@@ -40,7 +40,7 @@ Steps to setup aggregation from source account to Logcentral
 ## Setup Guard Duty Aggregation
 Steps to guard duty aggregation from source account to Logcentral
  1. Create a PR to add a member account resource, similar to
-    [GDSynapseProdMember resource](https://github.com/Sage-Bionetworks/logcentral-infra/templates/GuardDutyMaster.yaml)
+    [GDSynapseProdMember resource](https://github.com/Sage-Bionetworks/logcentral-infra/blob/master/templates/GuardDutyMaster.yaml)
  2. Create a PR to add a new [sceptre stack config](https://github.com/Sage-Bionetworks/synapseprod-infra/pull/9)
     to setup a guard duty member on the source account. 
     
