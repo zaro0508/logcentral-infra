@@ -31,6 +31,9 @@ Parameters:
   SandboxAwsAccountId:
     Type: String
     NoEcho: true
+  SecuritycentralAwsAccountId:
+    Type: String
+    NoEcho: true
 Resources:
   CloudtrailCrossAccountBucketPolicy:
     Type: "AWS::S3::BucketPolicy"
@@ -130,6 +133,13 @@ Resources:
                   - !ImportValue us-east-1-essentials-CloudtrailBucket
                   - '/AWSLogs/'
                   - !Ref SandboxAwsAccountId
+                  - '/*'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref SecuritycentralAwsAccountId
                   - '/*'
             Condition:
               StringEquals:
@@ -419,7 +429,7 @@ Resources:
             Action:
               - "sts:AssumeRole"
 
-  CloudtrailSynapseDevAccessPolicy:
+  CloudtrailSynapseDwAccessPolicy:
     Type: "AWS::IAM::Policy"
     Properties:
       PolicyName: !Sub 'CloudtrailCrossAccountAccessPolicy-${SynapseDwAwsAccountId}'
@@ -584,3 +594,47 @@ Resources:
                   - !ImportValue 'us-east-1-essentials-CloudtrailBucket'
       Roles:
         - !Ref 'CloudtrailSandboxRole'
+  CloudtrailSecuritycentralRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'RoleAccessBy${SecuritycentralAwsAccountId}'
+            Effect: "Allow"
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${SecuritycentralAwsAccountId}:root'
+            Action:
+              - "sts:AssumeRole"
+
+  CloudtrailSecuritycentralAccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: !Sub 'CloudtrailCrossAccountAccessPolicy-${SecuritycentralAwsAccountId}'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: !Sub 'LogAccessBy${SecuritycentralAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue us-east-1-essentials-CloudtrailBucket
+                  - '/AWSLogs/'
+                  - !Ref SecuritycentralAwsAccountId
+                  - '/*'
+          - Sid: !Sub 'BucketAccessBy${SecuritycentralAwsAccountId}'
+            Effect: "Allow"
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+            Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !ImportValue 'us-east-1-essentials-CloudtrailBucket'
+      Roles:
+        - !Ref 'CloudtrailSecuritycentralRole'

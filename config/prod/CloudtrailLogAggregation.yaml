@@ -11,3 +11,4 @@ parameters:
   SageItAwsAccountId: !ssm /infra/SageItAwsAccountId
   OrganizationsAwsAccountId: !ssm /infra/OrganizationsAwsAccountId
   SandboxAwsAccountId: !ssm /infra/SandboxAwsAccountId
+  SecuritycentralAwsAccountId: !ssm /infra/SecuritycentralAwsAccountId
