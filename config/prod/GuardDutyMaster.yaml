@@ -1,8 +1,0 @@
-template_path: templates/GuardDutyMaster.yaml
-stack_name: guardduty-master
-dependencies:
-  - essentials
-parameters:
-  BridgeProdAwsAccountId: !ssm /infra/BridgeProdAwsAccountId
-  SynapseProdAwsAccountId: !ssm /infra/SynapseProdAwsAccountId
-  OperatorEmail: aws.logcentral@sagebase.org
