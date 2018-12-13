@@ -143,19 +143,6 @@ Resources:
             Resource:
               - !Join
                 - ''
-                - - 'arn:aws:s3:::elasticbeanstalk-'
-                  - !Ref AWS::Region
-                  - '-'
-                  - !Ref AWS::AccountId
-                  - '/*'
-              - !Join
-                - ''
-                - - 'arn:aws:s3:::elasticbeanstalk-'
-                  - !Ref AWS::Region
-                  - '-'
-                  - !Ref AWS::AccountId
-              - !Join
-                - ''
                 - - 'arn:aws:s3:::'
                   - !ImportValue us-east-1-essentials-CloudtrailBucket
                   - '/*'
