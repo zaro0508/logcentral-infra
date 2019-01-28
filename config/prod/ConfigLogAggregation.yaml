@@ -1,4 +1,4 @@
-template_path: templates/ConfigLogAggregation.yaml
+template_path: ConfigLogAggregation.yaml
 stack_name: ConfigLogAggregation
 parameters:
   AdmincentralAwsAccountId: !ssm /infra/AdmincentralAwsAccountId

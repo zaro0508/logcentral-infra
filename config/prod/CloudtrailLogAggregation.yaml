@@ -1,4 +1,4 @@
-template_path: templates/CloudtrailLogAggregation.yaml
+template_path: CloudtrailLogAggregation.yaml
 stack_name: CloudtrailLogAggregation
 parameters:
   AdmincentralAwsAccountId: !ssm /infra/AdmincentralAwsAccountId
