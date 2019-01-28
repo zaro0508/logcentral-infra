@@ -1,7 +1,7 @@
 template_path: remote/AccountAlertTopics.yaml
 stack_name: AccountAlertTopics
 dependencies:
-  - bootstrap
+  - prod/bootstrap.yaml
 parameters:
   InitialSubscriberEmail: "aws.logcentral@sagebase.org"
   EnableSubscriberSMS: "false"
