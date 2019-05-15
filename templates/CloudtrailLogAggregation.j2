@@ -21,7 +21,7 @@ Resources:
             Action: "s3:PutObject"
             Resource:
 {% for account in sceptre_user_data.accounts %}
-              - Resource: arn:aws:s3:::{{ sceptre_user_data.cloudtrail_bucket }}/AWSLogs/{{ account }}/*
+              - arn:aws:s3:::{{ sceptre_user_data.cloudtrail_bucket }}/AWSLogs/{{ account }}/*
 {% endfor %}
             Condition:
               StringEquals:
@@ -60,5 +60,5 @@ Resources:
               - "s3:List*"
             Resource: arn:aws:s3:::{{ sceptre_user_data.cloudtrail_bucket }}
       Roles:
-        - CloudtrailRole{{ account }}
+        - Ref: {{ sceptre_user_data.stackname }}Role{{ account }}
 {% endfor %}
