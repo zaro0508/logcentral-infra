@@ -15,3 +15,4 @@ sceptre_user_data:
     - !ssm /infra/OrganizationsAwsAccountId
     - !ssm /infra/SandboxAwsAccountId
     - !ssm /infra/SecuritycentralAwsAccountId
+    - !ssm /infra/ItSandboxAwsAccountId
