@@ -17,3 +17,4 @@ sceptre_user_data:
     - !ssm /infra/SecuritycentralAwsAccountId
     - !ssm /infra/ItSandboxAwsAccountId
     - !ssm /infra/ImagecentralAwsAccountId
+    - !ssm /infra/TransitAwsAccountId
