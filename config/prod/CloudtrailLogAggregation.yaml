@@ -19,3 +19,4 @@ sceptre_user_data:
     - !ssm /infra/ImagecentralAwsAccountId
     - !ssm /infra/TransitAwsAccountId
     - !ssm /infra/ScipoolProdAwsAccountId
+    - "465877038949"
