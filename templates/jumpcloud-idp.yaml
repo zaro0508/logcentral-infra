@@ -1,0 +1,41 @@
+Description: Resources for Jumpcloud IDP
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  LogcentralAdminMetadata:
+    Type: String
+    Description: "Public certificate for Jumpcloud logcentral-admin app"
+Resources:
+  LogcentralAdminSamlProvider:
+    Type: Custom::SAMLProvider
+    Properties:
+      ServiceToken: !ImportValue
+        'Fn::Sub': '${AWS::Region}-cfn-cr-saml-provider-FunctionArn'
+      Name: "logcentral-admin"
+      Metadata: !Ref LogcentralAdminMetadata
+      URL: ""
+  LogcentralAdminSamlProviderRole:
+    Type: AWS::IAM::Role
+    Properties:
+      MaxSessionDuration: 28800
+      RoleName: !GetAtt LogcentralAdminSamlProvider.Name
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref LogcentralAdminSamlProvider
+            Action: sts:AssumeRoleWithSAML
+            Condition:
+              StringEquals:
+                "SAML:aud": "https://signin.aws.amazon.com/saml"
+Outputs:
+  LogcentralAdminSamlProviderArn:
+    Value: !Ref LogcentralAdminSamlProvider
+    Export:
+      Name: !Sub '${AWS::Region}-${AWS::StackName}-LogcentralAdminSamlProviderArn'
+  LogcentralAdminSamlProviderRoleArn:
+    Value: !GetAtt LogcentralAdminSamlProviderRole.Arn
+    Export:
+      Name: !Sub '${AWS::Region}-${AWS::StackName}-LogcentralAdminSamlProviderRoleArn'
