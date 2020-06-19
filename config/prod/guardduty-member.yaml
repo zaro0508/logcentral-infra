@@ -6,5 +6,5 @@ parameters:
   MasterAccountId: !ssm /infra/SecuritycentralAwsAccountId
   InvitationId: 5ab3d0707465fa98488a783d295555dd
 hooks:
-  before_update:
-    - !cmd "curl https://s3.amazonaws.com/{{stack_group_config.admincentral_cf_bucket}}/aws-infra/master/GuardDutyMember.yaml --create-dirs -o templates/remote/GuardDutyMember.yaml"
+  before_launch:
+    - !cmd "curl https://{{stack_group_config.admincentral_cf_bucket}}.s3.amazonaws.com/aws-infra/master/GuardDutyMember.yaml --create-dirs -o templates/remote/GuardDutyMember.yaml"
