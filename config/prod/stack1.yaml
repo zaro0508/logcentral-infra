@@ -1,8 +1,8 @@
-template_path: ConfigLogAggregation.j2
-stack_name: ConfigLogAggregation
+template_path: tester.j2
+stack_name: stack1
 sceptre_user_data:
   stackname: !stack_name
-  config_bucket: !stack_output_external essentials::AWSS3ConfigBucket
+  cloudtrail_bucket: !stack_output_external essentials::AWSS3CloudtrailBucket
   accounts:
     - !ssm /infra/AdmincentralAwsAccountId
     - !ssm /infra/BridgeDevAwsAccountId
@@ -15,9 +15,3 @@ sceptre_user_data:
     - !ssm /infra/OrganizationsAwsAccountId
     - !ssm /infra/SandboxAwsAccountId
     - !ssm /infra/SecuritycentralAwsAccountId
-    - !ssm /infra/ItSandboxAwsAccountId
-    - !ssm /infra/ImagecentralAwsAccountId
-    - !ssm /infra/TransitAwsAccountId
-    - !ssm /infra/ScipoolProdAwsAccountId
-    - "465877038949"   # org-sagebase-scipooldev
-    - "423819316185"   # org-sagebase-strides

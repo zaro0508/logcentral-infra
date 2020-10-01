@@ -20,3 +20,4 @@ sceptre_user_data:
     - !ssm /infra/TransitAwsAccountId
     - !ssm /infra/ScipoolProdAwsAccountId
     - "465877038949"    # org-sagebase-scipooldev
+    - "423819316185"    # org-sagebase-strides
